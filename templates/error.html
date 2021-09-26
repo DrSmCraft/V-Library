@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>V-Library</title>
+    {% extends "template.html" %}
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+
+    <div class="container-fluid text-center">
+        {% if fun_text is defined %}
+            {% for part in fun_text.split("\n") %}
+                <h1>{{ part }}<br></h1>
+            {% endfor %}
+        {% endif %}
+
+        {% if technical_text is defined %}
+            {% for part in technical_text.split("\n") %}
+                <h5>{{ part }}<br></h5>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+</body>
+</html>

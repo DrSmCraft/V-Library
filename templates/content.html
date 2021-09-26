@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>V-Library</title>
+    {% extends "template.html" %}
+
+    {% block head %}
+        {{ super() }}
+        <link href="https://unpkg.com/video.js@7/dist/video-js.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://unpkg.com/videojs-wavesurfer/dist/css/videojs.wavesurfer.min.css">
+
+        <script src="https://unpkg.com/wavesurfer.js"></script>
+        <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+        <script src="https://unpkg.com/videojs-wavesurfer/dist/videojs.wavesurfer.min.js"></script>
+
+    {% endblock %}
+
+
+</head>
+<body>
+{% block content %}
+
+
+    <script>
+        var audioPlayerOptions = {
+            controls: true,
+            autoplay: false,
+            loop: true,
+            muted: true,
+            fluid: false,
+            width: 600,
+            height: 300,
+            bigPlayButton: true,
+            plugins: {
+                wavesurfer: {
+                    backend: 'MediaElement',
+                    displayMilliseconds: false,
+                    debug: true,
+                    waveColor: 'white',
+                    progressColor: 'gray',
+                    cursorColor: 'red',
+                    background: 'yellow',
+                    interact: true,
+                    hideScrollbar: false
+                }
+            }
+        };
+
+
+        var videoPlayerOptions = {
+            controls: false,
+            autoplay: false,
+            loop: true,
+            muted: true,
+            fluid: true,
+            width: 600,
+            height: 300,
+            bigPlayButton: true
+        };
+
+        var playerMap = new Map();
+
+    </script>
+    <div class="container bs-docs-container">
+
+
+        <section id="search-content">
+            <form method="get" target="_self">
+                <div class="form-group">
+                    <label for="text-content-search">Search</label>
+                    <div class="row">
+
+                        <div class="col-11">
+
+                            {% if search is undefined %}
+                                <input type="text" class="form-control" id="text-content-search"
+                                       placeholder="Search" name="search">
+                            {% else %}
+                                <input type="text" class="form-control" id="text-content-search"
+                                       placeholder="Search" name="search" value="{{ search }}">
+                            {% endif %}
+
+                        </div>
+                        <div class="col-1">
+                            <button type="submit" class="btn btn-primary" style="width: 128px">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <div class="h-divider"></div>
+
+
+        <section id="videos">
+            <h2 class="text-center">Videos</h2>
+
+            {% if videos|length > 0 %}
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="row auto-clear">
+                        {% for video_track in videos %}
+                            <div class="col-md-3 col-sm-4 text-center">
+                                {% set id = "video-" + video_track.id|string %}
+                                <div class="video-card">
+                                    <a type="submit" class="text-center card-header "
+                                       id="submit-{{ video_track.id }}"
+                                       href="{{ url_for('watch', id=video_track.id) }}">
+
+                                        <h5>{{ video_track.name }}</h5>
+
+                                        <img class="img-fluid img-thumbnail"
+                                             src="{{ url_for('static', filename=video_track.thumbnail) }}"
+                                             alt="{{ video_track.name }}">
+
+
+                                        <p class="text-center">
+                                            {{ video_track.views }} - {{ video_track.date }}
+                                        </p>
+
+
+                                        {#                                        <script>#}
+                                        {#                                            // create player#}
+                                        {#                                            var player = videojs("{{ id }}", videoPlayerOptions, null);#}
+                                        {##}
+                                        {##}
+                                        {#                                            player.src({#}
+                                        {#                                                src: "{{url_for('static', filename=video_track.location) }}",#}
+                                        {#                                                type: 'video/mp4'#}
+                                        {#                                            });#}
+                                        {##}
+                                        {#                                            playerMap.set("{{ id }}", player);#}
+                                        {#                                        </script>#}
+                                        {##}
+                                        {#                                        <script>#}
+                                        {#                                            document.getElementById("{{ id }}").addEventListener('mouseover', function (e) {#}
+                                        {##}
+                                        {#                                                playerMap.get("{{ id }}").play();#}
+                                        {#                                            }, false);#}
+                                        {##}
+                                        {#                                            document.getElementById("{{ id }}").addEventListener('mouseout', function (e) {#}
+                                        {#                                                playerMap.get("{{ id }}").pause();#}
+                                        {#                                            }, false);#}
+                                        {##}
+                                        {#                                        </script>#}
+
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+
+                <h3 class="text-center">No Results Found!</h3>
+            {% endif %}
+        </section>
+
+
+        {#        <section id="videos">#}
+        {#            <h2 class="text-center">Videos</h2>#}
+        {##}
+        {#            {% if videos|length > 0 %}#}
+        {#                <div class="table-responsive">#}
+        {#                    <table class="table table-bordered">#}
+        {#                        <tbody>#}
+        {##}
+        {##}
+        {#                        <tr>#}
+        {#                            {% for video_track in videos %}#}
+        {#                                {% set id = "video-" + video_track.id|string %}#}
+        {#                                <th>#}
+        {#                                    <div class="card">#}
+        {#                                        <a type="submit" class="text-center card-header "#}
+        {#                                           id="submit-{{ video_track.id }}"#}
+        {#                                           href="{{ url_for('watch', id=video_track.id) }}">#}
+        {##}
+        {#                                            <p>{{ video_track.name }}</p>#}
+        {#                                            <div class="card-body">#}
+        {#                                                <video id="{{ id }}"#}
+        {#                                                       class="video-js vjs-tech vjs-default-skin vjs-big-play-centered"#}
+        {#                                                       preload="auto" width="640"#}
+        {#                                                       height="264" data-setup="{}"#}
+        {#                                                       playsinline="playsinline" muted>#}
+        {##}
+        {#                                                    <source src="{{ url_for('static', filename=video_track.location) }}"#}
+        {#                                                            type="video/mp4"/>#}
+        {#                                                </video>#}
+        {##}
+        {#                                                <p class="text-center">#}
+        {#                                                    Date: {{ video_track.date }}#}
+        {#                                                </p>#}
+        {##}
+        {#                                                <script>#}
+        {#                                                    // create player#}
+        {#                                                    var player = videojs("{{ id }}", videoPlayerOptions, null);#}
+        {##}
+        {##}
+        {#                                                    player.src({#}
+        {#                                                        src: "{{url_for('static', filename=video_track.location) }}",#}
+        {#                                                        type: 'video/mp4'#}
+        {#                                                    });#}
+        {##}
+        {#                                                    playerMap.set("{{ id }}", player);#}
+        {#                                                </script>#}
+        {##}
+        {#                                                <script>#}
+        {#                                                    document.getElementById("{{ id }}").addEventListener('mouseover', function (e) {#}
+        {##}
+        {#                                                        playerMap.get("{{ id }}").play();#}
+        {#                                                    }, false);#}
+        {##}
+        {#                                                    document.getElementById("{{ id }}").addEventListener('mouseout', function (e) {#}
+        {#                                                        playerMap.get("{{ id }}").pause();#}
+        {#                                                    }, false);#}
+        {##}
+        {#                                                </script>#}
+        {##}
+        {#                                            </div>#}
+        {#                                        </a>#}
+        {##}
+        {#                                    </div>#}
+        {##}
+        {#                                </th>#}
+        {#                            {% endfor %}#}
+        {#                        </tr>#}
+        {#                        </tbody>#}
+        {#                    </table>#}
+        {#                </div>#}
+        {#            {% else %}#}
+        {##}
+        {#                <h3 class="text-center">No Results Found!</h3>#}
+        {#            {% endif %}#}
+        {#        </section>#}
+
+        <br>
+        {#        <section id="audio">#}
+        {#            <h2 class="text-center">Audio</h2>#}
+        {#            {% if audio|length > 0 %}#}
+        {#                <div class="table-responsive">#}
+        {#                    <table class="table table-bordered">#}
+        {#                        <tbody>#}
+        {#                        <tr>#}
+        {#                            {% for audio_track in audio %}#}
+        {#                                {% set id = "audio-" + audio_track.id|string %}#}
+        {##}
+        {#                                <th>#}
+        {#                                    <div class="card">#}
+        {#                                        <a type="submit" class="text-center card-header "#}
+        {#                                           id="submit-{{ audio_track.id }}"#}
+        {#                                           href="{{ url_for('listen', id=audio_track.id) }}">#}
+        {##}
+        {#                                            <p>#}
+        {#                                                {{ audio_track.name }}#}
+        {#                                            </p>#}
+        {##}
+        {#                                            <div class="card-body">#}
+        {#                                                <audio id="{{ id }}"#}
+        {#                                                       class="video-js vjs-tech vjs-default-skin vjs-big-play-centered"#}
+        {#                                                       preload="auto" data-setup="{}">#}
+        {#                                                </audio>#}
+        {##}
+        {#                                                <p class="text-center">#}
+        {#                                                    Date: {{ audio_track.date }}#}
+        {#                                                </p>#}
+        {#                                                <script>#}
+        {##}
+        {#                                                    // create player#}
+        {#                                                    var player = videojs("{{ id }}", audioPlayerOptions, function () {#}
+        {#// load file#}
+        {##}
+        {#                                                    });#}
+        {#                                                    player.src({#}
+        {#                                                        src: "{{ url_for('static', filename=audio_track.location) }}",#}
+        {#                                                        type: 'audio/wav'#}
+        {#                                                    });#}
+        {##}
+        {#                                                    playerMap.set("{{ id }}", player);#}
+        {##}
+        {#                                                    player.wavesurfer.on('ready', function () {#}
+        {##}
+        {#                                                        console.log("{{ id }} is ready!")#}
+        {#                                                    })#}
+        {#                                                </script>#}
+        {#                                                <script>#}
+        {##}
+        {#                                                    document.getElementById("{{ id }}").addEventListener('mouseover', function (e) {#}
+        {#                                                        playerMap.get("{{ id }}").play();#}
+        {#                                                    }, false);#}
+        {##}
+        {#                                                    document.getElementById("{{ id }}").addEventListener('mouseout', function (e) {#}
+        {#                                                        playerMap.get("{{ id }}").pause();#}
+        {#                                                    }, false);#}
+        {##}
+        {##}
+        {##}
+        {#                                                </script>#}
+        {#                                            </div>#}
+        {#                                        </a>#}
+        {##}
+        {#                                    </div>#}
+        {#                                </th>#}
+        {#                            {% endfor %}#}
+        {#                        </tr>#}
+        {#                        </tbody>#}
+        {#                    </table>#}
+        {#                </div>#}
+        {#            {% else %}#}
+        {#                <h3 class="text-center">No Results Found!</h3>#}
+        {#            {% endif %}#}
+        {##}
+        {#        </section>#}
+
+
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stream</title>
+    {% extends "template.html" %}
+
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+
+    <video id="{{ id }}"
+           preload="auto" width="640"
+           height="264" data-setup="{}" controls>
+    </video>
+
+
+    <script>
+
+
+
+
+    </script>
+
+
+{% endblock %}
+
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+
+    {% block title %}
+        <title>V-Library</title>
+
+    {% endblock %}
+    {% block head %}
+
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+              integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+              crossorigin="anonymous">
+        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+                integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+                crossorigin="anonymous"></script>
+    {% endblock %}
+
+</head>
+<body>
+<header class="stick-top">
+
+    <nav class="navbar navbar-expand-md ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <svg viewBox="0 0 500 500" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                    <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 16.2px;"
+                          x="132.097" y="119.351"
+                          transform="matrix(20.820059, 0, 0, 27.3948, -2615.322754, -2863.567871)">V
+                    </text>
+                </svg>
+            </a>
+            <button class="navbar-toggler" type="button" data-target="#myNavbar" data-toggle="collapse"
+                    aria-controls="myNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse text-center" id="myNavbar">
+                <ul class="nav navbar-nav mr-auto ">
+                    <li class="nav-item active ">
+                        <a class="nav-link nav-link-blue" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item active ">
+                        <a class="nav-link nav-link-blue" href="{{ url_for('about') }}">About</a>
+                    </li>
+                    <li class="nav-item active ">
+                        <a class="nav-link nav-link-blue" href="{{ url_for('content') }}">Content</a>
+                    </li>
+                </ul>
+
+
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item active">
+
+                        {% if session['LoggedUser'] is defined %}
+                            <a type="button" class="nav-link nav-link-green" href="{{ url_for('user') }}">
+                                User Settings
+                            </a>
+                        {% else %}
+                            <a type="button" class="nav-link nav-link-green" href="{{ url_for('login') }}">
+                                Login
+                            </a>
+                        {% endif %}
+                    </li>
+
+                    <li class="nav-item active">
+
+
+                        {% if session['LoggedUser'] is defined %}
+                            <a type="button" class="nav-link nav-link-green" href="{{ url_for('logout') }}">
+                                Logout
+                            </a>
+                        {% else %}
+                            <a type="button" class="nav-link nav-link-green" href="{{ url_for('register') }}">
+                                Sign Up
+                            </a>
+                        {% endif %}
+
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </nav>
+
+
+</header>
+<div id="main-container">
+
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+
+<footer id="endFooter">
+    <div class="card">
+        <div class="card-body">
+            <br>
+            <p class="text-center ">V-Library &copy; 2021
+            </p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

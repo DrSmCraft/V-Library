@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>V-Library | Listen</title>
+    {% extends "viewContent.html" %}
+
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
+</head>
+<body>
+
+{% block content %}
+    {{ super() }}
+    <audio id="audio-{{ id }}"
+           class="video-js vjs-tech vjs-default-skin vjs-big-play-centered"
+           preload="auto" data-setup="{}"
+           src="{{ url_for('static', filename=audio.location) }}">
+    </audio>
+
+    <p class="text-center">
+        Date: {{ audio.date }}
+    </p>
+    <script>
+        // create player
+        var player = videojs("audio-{{ id }}", audioPlayerOptions, null);
+
+        // load file
+        player.src({
+            src: "{{ url_for('static', filename=audio.location) }}",
+            type: 'audio/wav'
+        });
+
+    </script>
+
+{% endblock %}
+</body>
+</html>

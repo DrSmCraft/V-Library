@@ -1,0 +1,183 @@
+{% extends "viewContent.html" %}
+{% block title %}
+    <title>V-Library | Watch</title>
+{% endblock %}
+{% block head %}
+    {{ super() }}
+    {#    <link href="https://unpkg.com/video.js@7/dist/video-js.min.css" rel="stylesheet"/>#}
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css"/>
+    <script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
+
+    {#    <link rel="stylesheet" href="https://unpkg.com/videojs-wavesurfer/dist/css/videojs.wavesurfer.min.css">#}
+
+    {#    <script src="https://unpkg.com/wavesurfer.js"></script>#}
+    {#    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>#}
+    {#    <script src="https://unpkg.com/videojs-wavesurfer/dist/videojs.wavesurfer.min.js"></script>#}
+
+    <script>
+
+        var videoPlayerOptions = {
+            controls: false,
+            autoplay: false,
+            loop: true,
+            muted: true,
+            fluid: true,
+            width: 600,
+            height: 300,
+            bigPlayButton: true
+        };
+
+        function loadVideo() {
+            var URL = window.URL || window.webkitURL;
+            var video = document.getElementById('video-player');
+
+
+            var path = "{{ url_for('static', filename=video.location) }}";
+
+            if (video.src === "") {
+                var videoUrl = path;
+                var source = document.getElementById("video-src");
+                source.setAttribute("src", videoUrl);
+                source.setAttribute("type", "video/mp4");
+                video.innerHTML = source.outerHTML;
+                video.load();
+
+
+                var player = new Plyr('#video-player');
+                window.player = player;
+            }
+
+
+        }
+
+
+    </script>
+{% endblock %}
+
+
+
+{% block content %}
+
+    {% if status is defined %}
+
+    {% endif %}
+
+    <div class="container-fluid">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-8 col-sm-12 text-center">
+
+
+                <div class="container-fluid">
+
+
+                    <form method="post">
+
+                        <div class="row">
+                            <div class="text-center col-12 form-group">
+                                <label for="title-input" class="form-label">Title</label>
+                                <input id="title-input" class="form-control" type="text" value="{{ video.name }}"
+                                       name="title">
+                            </div>
+
+
+                            <div class="video-container container-fluid">
+
+                                <video id="video-player"
+                                       preload="auto" data-setup="{}"
+                                       controlslist="nodownload"
+                                       poster="{{ url_for('static', filename=video.thumbnail) }}">
+
+                                    <noscript>
+                                        <p>
+                                            To view this video please enable JavaScript, and consider upgrading to a
+                                            web browser that
+
+                                        </p>
+
+                                    </noscript>
+
+                                    <source id="video-src">
+
+                                </video>
+                            </div>
+
+
+                            <div class="col-12 form-group text-center">
+                                <input class="btn form-btn btn-blue" type="button" name="new-video"
+                                       value="Replace Video">
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <ul class="list-inline content-metadata-list">
+                                <li class="list-inline-item content-metadata-item">
+                                    <p>
+                                        <small>
+                                            Published on {{ video.date }}
+                                        </small>
+                                    </p>
+                                </li>
+
+                                <li class="list-inline-item content-metadata-item">
+
+                                    <small>
+                                        {{ video.views }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                        </svg>
+                                    </small>
+
+                                </li>
+
+
+                                <li class="list-inline-item content-metadata-item">
+                                    <input id="public-input" type="checkbox" class="form-check-input" name="public"
+                                           {% if video.public %}checked{% endif %}>
+                                    <label for="public-input">Public</label>
+
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" rows="5" cols="80">
+                                        {{ video.description }}
+                                </textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                <input class="btn btn-blue form-input form-submit" type="submit" value="Save">
+
+                            </div>
+
+
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+    <hr/>
+
+
+
+    <script>
+        loadVideo();
+
+    </script>
+
+
+{% endblock %}

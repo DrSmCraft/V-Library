@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+{#<video></video>#}
+{#<br/>#}
+{#<form>#}
+{#    <input type="file" name="file" id="fileItem" onchange="onChange()">#}
+{#    <input type="submit" value="Play">#}
+{#</form>#}
+
+
+<video id="video-player"
+       preload="auto" width="640"
+       height="264" data-setup="{}"
+       playsinline="playsinline" controls></video>
+
+<button onclick="ajax()">Click Me</button>
+<script type="text/javascript">
+    function ajax() {
+        var URL = window.URL || window.webkitURL;
+        var video = document.getElementsByTagName('video')[0];
+
+
+        var blob = null;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/static/{{ video.location }}");
+
+        xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+        xhr.onload = function () {
+            blob = xhr.response;//xhr.response is now a blob object
+            console.log(blob);
+
+            vUrl = URL.createObjectURL(blob);
+            video.src = vUrl;
+            video.load();
+            video.onloadeddata = function () {
+                video.play();
+            }
+
+        }
+        xhr.send();
+    }
+
+
+</script>
+
+
+</body>
+</html>

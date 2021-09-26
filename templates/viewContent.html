@@ -1,0 +1,56 @@
+{% extends "template.html" %}
+
+{% block title %}
+    <title>V-Library | View</title>
+{% endblock %}
+{% block head %}
+    {{ super() }}
+
+
+
+{% endblock %}
+
+
+{% block content %}
+    <script>
+        var audioPlayerOptions = {
+            controls: true,
+            autoplay: false,
+            loop: true,
+            muted: false,
+            fluid: false,
+            width: 600,
+            height: 300,
+            bigPlayButton: true,
+            plugins: {
+                wavesurfer: {
+                    backend: 'MediaElement',
+                    displayMilliseconds: false,
+                    debug: true,
+                    waveColor: 'white',
+                    progressColor: 'gray',
+                    cursorColor: 'red',
+                    background: 'yellow',
+                    interact: true,
+                    hideScrollbar: false
+                }
+            }
+        };
+
+
+        var videoPlayerOptions = {
+            controls: false,
+            autoplay: false,
+            loop: true,
+            muted: true,
+            fluid: false,
+            width: 600,
+            height: 300,
+            bigPlayButton: true
+        };
+
+
+    </script>
+
+{% endblock %}
+

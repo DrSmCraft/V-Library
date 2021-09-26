@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>V-Library</title>
+    {% extends "template.html" %}
+
+    {% block head %}
+        {{ super() }}
+
+    {% endblock %}
+
+</head>
+<body>
+
+
+{% block content %}
+
+    <section role="main">
+
+        {#    This should show trending video thumbnails.#}
+        <section id="displayCarousel" class="carousel slide text-center" data-ride="carousel"
+                 style="width: 80%;height: 80%; margin: auto">
+            <div class="text-center">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="d-block w-100" src="{{ url_for('static', filename='repository/videos/thumbnails/Islands.png') }}"
+                             alt="Logo">
+                    </div>
+                </div>
+
+                <a class="carousel-control-prev" role="button" data-slide="prev"
+                   onclick="$('#displayCarousel').carousel('prev')">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" role="button" data-slide="next"
+                   onclick="$('#displayCarousel').carousel('next')">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </section>
+
+
+        <div class="container bs-docs-container">
+            <p class="lead text-center">Use this document as a way to quickly start any new project.<br> All you get is
+                this text
+                and a mostly barebones HTML document.</p>
+        </div>
+    </section>
+
+
+
+{% endblock %}
+
+
+</body>
+</html>
