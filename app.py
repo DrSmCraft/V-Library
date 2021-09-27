@@ -9,13 +9,15 @@ from werkzeug.utils import secure_filename
 import json
 import time
 import Levenshtein
-
+import tempfile
+import os
 SPELLCHECK_LIMIT = 5
 
 app = Flask(__name__)
 
 app.secret_key = bcrypt.hashpw(uuid.uuid1().hex.encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
 app.config['UPLOAD_FOLDER'] = "uploads"
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
 
 def get_user_profile_from_database(username, password):
@@ -216,13 +218,12 @@ def register():
 @app.route("/user", methods=["GET", "POST"])
 def user():
     if request.method == "POST":
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            print("No file part")
+        if len(request.files) > 0:
+            pair = list(request.files.items())[0]
+            filename = secure_filename(pair[1].filename)
+            pair[1].save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
             return redirect(request.url)
-        else:
-            return "Success!!!!!!!!!!!!!!!!!!!!!!!!"
 
     if 'LoggedUser' in session.keys() and session['LoggedUser'] is not None:
         user_json = json.loads(session['LoggedUser'])
