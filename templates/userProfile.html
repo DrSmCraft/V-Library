@@ -11,16 +11,26 @@
 <body>
 {% block content %}
 
+    <script>
+        function avatarUpload() {
+            let name = document.getElementById("avatar-input").files[0].name;
+            document.getElementById("avatar-input-label").innerText = name;
+            {#document.getElementById("avatar-form").submit();#}
+
+            return false;
+        }
+    </script>
+
     <div class="container-fluid text-center">
         <div class="row">
             <ul class="nav flex-column col-2 user-profile-settings" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active user-profile-settings-link" data-toggle="tab" href="#settings" role="tab"
+                    <a class="nav-link btn-blue active" data-toggle="tab" href="#settings" role="tab"
                        aria-controls="settings"
                        aria-selected="true">Settings</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link user-profile-settings-link" data-toggle="tab" href="#videos" role="tab"
+                    <a class="nav-link btn-blue" data-toggle="tab" href="#videos" role="tab"
                        aria-controls="videos"
                        aria-selected="false">Videos</a>
                 </li>
@@ -40,15 +50,29 @@
                         </div>
                         <div class="col-6">
                             <div class="row">
-
                                 <div class="col-12">
-                                    <img src="{{ url_for('static', filename=profile.avatar) }}"
+                                    <img class="img-fluid" src="{{ url_for('static', filename=profile.avatar) }}"
                                          alt="Avatar">
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-12 text-center">
-                                    <button class="btn btn-green">Change Avatar</button>
+                                <div class="col-6 text-center">
+
+                                    <form id="avatar-form" method="post"
+                                          onsubmit="return true;" enctype="multipart/form-data">
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="avatar-input"
+                                                       aria-describedby="avatar-input" placeholder="Change Avatar"
+                                                       onchange="avatarUpload();">
+                                                <label id="avatar-input-label" class="custom-file-label"
+                                                       for="avatar-input">Change Avatar</label>
+                                            </div>
+                                        </div>
+
+                                        {#                                        <label for="sub"> Submit</label>#}
+                                        <input id="sub" type="submit">
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -58,9 +82,7 @@
                     <div class="row">
                         <div class="col-12">
                             <h1>Videos</h1>
-
                             {% if profile.can_publish > 0 %}
-
                                 <button class="btn btn-blue">Upload new Video</button>
                             {% else %}
                                 <p class="error-text">You have not been approved to upload new content!</p>

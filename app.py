@@ -5,6 +5,7 @@ from user_profile import *
 import random
 import bcrypt
 import flask.sessions
+from werkzeug.utils import secure_filename
 import json
 import time
 import Levenshtein
@@ -14,6 +15,7 @@ SPELLCHECK_LIMIT = 5
 app = Flask(__name__)
 
 app.secret_key = bcrypt.hashpw(uuid.uuid1().hex.encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
+app.config['UPLOAD_FOLDER'] = "uploads"
 
 
 def get_user_profile_from_database(username, password):
@@ -211,8 +213,17 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/user")
+@app.route("/user", methods=["GET", "POST"])
 def user():
+    if request.method == "POST":
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            print("No file part")
+            return redirect(request.url)
+        else:
+            return "Success!!!!!!!!!!!!!!!!!!!!!!!!"
+
     if 'LoggedUser' in session.keys() and session['LoggedUser'] is not None:
         user_json = json.loads(session['LoggedUser'])
         profile = UserProfile(user_json['username'], user_json['email'],
@@ -311,7 +322,6 @@ def access_protected_static_content(filename):
 
     if request.referrer is None or filename in request.referrer or invalid_mimetype_flag:  # Need to flush this out
         return access_denied(403)
-
     else:
         return send_file(app.root_path + request.path.replace("/", "\\"))
 

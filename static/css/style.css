@@ -82,7 +82,6 @@ nav {
 }
 
 
-
 .logo {
     background-color: #0D122B;
     padding: 10px;
@@ -165,13 +164,8 @@ video {
 }
 
 
-.user-profile-settings-link {
-    background: #A0C6CF;
-    color: white;
-}
-
-.user-profile-settings-link.active{
-    background: #a1ecfa;
+.btn-blue.active {
+    background: #00cafd;
     color: white;
 }
 
@@ -179,10 +173,10 @@ video {
     background: #E6E7E7;
 }
 
-button, .btn{
+button, .btn {
     margin: 10px;
 }
 
-.error-text{
+.error-text {
     color: darkred;
 }
