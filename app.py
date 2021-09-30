@@ -11,6 +11,8 @@ import time
 import Levenshtein
 import tempfile
 import os
+import shutil
+
 SPELLCHECK_LIMIT = 5
 
 app = Flask(__name__)
@@ -19,8 +21,11 @@ app.secret_key = bcrypt.hashpw(uuid.uuid1().hex.encode("UTF-8"), bcrypt.gensalt(
 app.config['UPLOAD_FOLDER'] = "uploads"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
+global logged_user
+logged_user = None
 
-def get_user_profile_from_database(username, password):
+
+def get_user_profile_from_database_by_username_password(username, password):
     if "@" in username:
         rows = database_utils.get_all_with_constraint("databases/users.db", "users",
                                                       modifier=database_utils.CombinationModifier.And, email=username)
@@ -37,6 +42,20 @@ def get_user_profile_from_database(username, password):
                 return profile
             else:
                 return "Incorrect Password"
+    else:
+        return "Username Not Found"
+
+
+def get_user_profile_from_database_by_id(id):
+    rows = database_utils.get_all_with_constraint("databases/users.db", "users",
+                                                  modifier=database_utils.CombinationModifier.And,
+                                                  id=id)
+
+    if len(rows) > 0:
+        for row in rows:
+            profile = UserProfile(row['Username'], row['Email'], row['FirstName'], row['LastName'], row['Avatar'],
+                                  row['Public'], row['Id'], row['CanPublish'])
+            return profile
     else:
         return "Username Not Found"
 
@@ -175,11 +194,14 @@ def about():
 def login():
     if request.method == "POST":
         form_data = request.form
-        profile_result = get_user_profile_from_database(form_data['loginUsername'], form_data['loginPassword'])
+        profile_result = get_user_profile_from_database_by_username_password(form_data['loginUsername'],
+                                                                             form_data['loginPassword'])
 
         if type(profile_result) == UserProfile:
             print("Logging in successfully " + str(profile_result))
             session['LoggedUser'] = profile_result.json()
+            global logged_user
+            logged_user = profile_result
             return redirect(url_for("user"))
 
         else:
@@ -198,6 +220,8 @@ def login():
 @app.route("/logout", methods=['GET'])
 def logout():
     session.pop('LoggedUser', None)
+    global logged_user
+    logged_user = None
     return redirect(url_for("home"))
 
 
@@ -217,21 +241,26 @@ def register():
 
 @app.route("/user", methods=["GET", "POST"])
 def user():
-    if request.method == "POST":
-        if len(request.files) > 0:
-            pair = list(request.files.items())[0]
-            filename = secure_filename(pair[1].filename)
-            pair[1].save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    global logged_user
+    if logged_user is not None:
 
-            return redirect(request.url)
-
-    if 'LoggedUser' in session.keys() and session['LoggedUser'] is not None:
-        user_json = json.loads(session['LoggedUser'])
-        profile = UserProfile(user_json['username'], user_json['email'],
-                              user_json['first_name'],
-                              user_json['last_name'], user_json['avatar'],
-                              user_json['public'], user_json['id'], user_json['can_publish'])
+        profile = logged_user
         vids = get_videos_owned_by_user(profile)
+
+        if request.method == "POST":
+            if len(request.files) > 0:
+                pair = list(request.files.items())[0]
+                filename = secure_filename(pair[1].filename)
+                path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                pair[1].save(path)
+                new_path = "avatars\\%s.%s" % (profile.id, filename.split(".")[-1])
+                shutil.copyfile(path, "static\\" + new_path)
+                os.remove(path)
+
+                q = "UPDATE Users SET Avatar='%s' WHERE ID='%s'" % (new_path.replace("\\", "/"), profile.id)
+                database_utils.execute_write("databases/users.db", q)
+                logged_user = get_user_profile_from_database_by_id(profile.id)
+                session["LoggedUser"] = logged_user.json()
 
         return render_template("userProfile.html",
                                profile=profile, videos=vids)
@@ -245,14 +274,30 @@ def edit():
         return access_denied(404)
 
     video_id = request.args["id"]
+    global logged_user
+    if logged_user is not None:
 
-    if 'LoggedUser' in session.keys() and session['LoggedUser'] is not None:
-        user_json = json.loads(session['LoggedUser'])
-        profile = UserProfile(user_json['username'], user_json['email'],
-                              user_json['first_name'],
-                              user_json['last_name'], user_json['avatar'],
-                              user_json['public'], user_json['id'], user_json['can_publish'])
+        profile = logged_user
+
         if does_user_own_video(profile, video_id):
+
+            if request.method == 'POST':
+                q = "UPDATE Video SET "
+                for key, item in request.form.items():
+                    if key == "title":
+                        q += "Name='%s' " % item
+                    elif key == "public":
+                        q += "Public='%s' " % "1" if item == "on" else "0"
+                    elif key == "description":
+                        q += "Description='%s' " % item
+                q = q.strip().replace("' ", "', ")
+                q += " WHERE ID='%s'" % video_id
+
+
+                print(q)
+                    # database_utils.execute_write("databases/users.db", q)
+                    # logged_user = get_user_profile_from_database_by_id(profile.id)
+
             vid = get_video_by_id(video_id)
             if request.method == 'GET':
                 return render_template("edit.html", video=vid)

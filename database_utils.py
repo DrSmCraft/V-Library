@@ -11,8 +11,6 @@ class CombinationModifier(enum.Enum):
         return str(self.value)
 
 
-
-
 def execute_read(database, query):
     con = sqlite3.connect(database)
     con.row_factory = sqlite3.Row
@@ -33,7 +31,7 @@ def execute_write(database, query):
 
 
 def get_all(database, table):
-    query = "Select * from " + table
+    query = "SELECT * FROM " + table
     return execute_read(database, query)
 
 
@@ -51,7 +49,7 @@ def insert(database, table, **kwargs):
         count += 1
     keys += ") "
     vals += ") "
-    query = "Insert Into " + table + keys + "VALUES" + vals
+    query = "INSERT INTO " + table + keys + "VALUES" + vals
 
     execute_write(database, query)
 
@@ -65,7 +63,7 @@ def get_all_with_constraint(database, table, modifier=CombinationModifier.And, *
         if count < num_items - 1:
             q += " " + str(modifier) + " "
         count += 1
-    query = "Select * From " + table + " Where" + q
+    query = "SELECT * FROM " + table + " WHERE" + q
 
     con = sqlite3.connect(database)
     con.row_factory = sqlite3.Row
@@ -74,3 +72,35 @@ def get_all_with_constraint(database, table, modifier=CombinationModifier.And, *
     rows = cur.fetchall()
     con.close()
     return rows
+
+
+def set_attr_with_constraint(database, table, constraint_attr, modifier=CombinationModifier.And, **kwargs):
+    num_items = len(kwargs)
+    count = 0
+    q = " "
+    constraints = {}
+    for key, val in kwargs.items():
+        if key not in constraint_attr:
+            q += str(key) + "='" + str(val) + "'"
+            if count < num_items - 1:
+                q += ", "
+        else:
+            constraints[key] = val
+
+        count += 1
+    c = ""
+    for key, val in constraints.items():
+        c += str(key) + "='" + str(val) + "'"
+        if count < len(constraints) - 1:
+            q += " " + str(modifier) + " "
+        count += 1
+
+    query = "UPDATE " + table + " SET " + q + " WHERE " + c
+    query = query.replace(",  WHERE", " WHERE").replace("  ", " ")
+    con = sqlite3.connect(database)
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute(query)
+    con.close()
+
+
