@@ -13,15 +13,12 @@
         <script src="https://unpkg.com/wavesurfer.js"></script>
         <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
         <script src="https://unpkg.com/videojs-wavesurfer/dist/videojs.wavesurfer.min.js"></script>
-
     {% endblock %}
 
 
 </head>
 <body>
 {% block content %}
-
-
     <script>
         var audioPlayerOptions = {
             controls: true,
@@ -61,26 +58,28 @@
 
         var playerMap = new Map();
 
+        function validateSearch() {
+            let searchQuery = document.getElementById("text-content-search").value;
+            if (searchQuery == "") {
+                return false;
+            }
+            return true;
+        }
     </script>
     <div class="container bs-docs-container">
-
-
         <section id="search-content">
-            <form method="get" target="_self">
+            <form method="get" target="_self" onsubmit="return validateSearch();">
                 <div class="form-group">
                     <label for="text-content-search">Search</label>
                     <div class="row">
-
                         <div class="col-11">
-
                             {% if search is undefined %}
-                                <input type="text" class="form-control" id="text-content-search"
+                                <input id="text-content-search" type="text" class="form-control"
                                        placeholder="Search" name="search">
                             {% else %}
-                                <input type="text" class="form-control" id="text-content-search"
+                                <input id="text-content-search" type="text" class="form-control"
                                        placeholder="Search" name="search" value="{{ search }}">
                             {% endif %}
-
                         </div>
                         <div class="col-1">
                             <button type="submit" class="btn btn-primary" style="width: 128px">
@@ -96,7 +95,6 @@
         </section>
 
         <div class="h-divider"></div>
-
 
         <section id="videos">
             <h2 class="text-center">Videos</h2>
@@ -320,12 +318,6 @@
 
 
     </div>
-
-
-
-
-
-
 {% endblock %}
 
 </body>

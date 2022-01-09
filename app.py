@@ -251,16 +251,17 @@ def user():
             if len(request.files) > 0:
                 pair = list(request.files.items())[0]
                 filename = secure_filename(pair[1].filename)
-                path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                pair[1].save(path)
-                new_path = "avatars\\%s.%s" % (profile.id, filename.split(".")[-1])
-                shutil.copyfile(path, "static\\" + new_path)
-                os.remove(path)
+                if filename != "":
+                    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    pair[1].save(path)
+                    new_path = "avatars\\%s.%s" % (profile.id, filename.split(".")[-1])
+                    shutil.copyfile(path, "static\\" + new_path)
+                    os.remove(path)
 
-                q = "UPDATE Users SET Avatar='%s' WHERE ID='%s'" % (new_path.replace("\\", "/"), profile.id)
-                database_utils.execute_write("databases/users.db", q)
-                logged_user = get_user_profile_from_database_by_id(profile.id)
-                session["LoggedUser"] = logged_user.json()
+                    q = "UPDATE Users SET Avatar='%s' WHERE ID='%s'" % (new_path.replace("\\", "/"), profile.id)
+                    database_utils.execute_write("databases/users.db", q)
+                    logged_user = get_user_profile_from_database_by_id(profile.id)
+                    session["LoggedUser"] = logged_user.json()
 
         return render_template("userProfile.html",
                                profile=profile, videos=vids)
@@ -280,29 +281,28 @@ def edit():
         profile = logged_user
 
         if does_user_own_video(profile, video_id):
-
+            args = {}
             if request.method == 'POST':
-                q = "UPDATE Video SET "
+                if 'public' not in request.form:
+                    args['public'] = '0'
                 for key, item in request.form.items():
                     if key == "title":
-                        q += "Name='%s' " % item
+                        args['name'] = item
                     elif key == "public":
-                        q += "Public='%s' " % "1" if item == "on" else "0"
+                        args['public'] = '1' if item == 'on' else '0'
                     elif key == "description":
-                        q += "Description='%s' " % item
-                q = q.strip().replace("' ", "', ")
-                q += " WHERE ID='%s'" % video_id
+                        args['description'] = item
+                args['id'] = video_id
+                print(args)
+                database_utils.set_attr_with_constraint('databases/repository.db', 'Video', ['id'], **args)
 
-
-                print(q)
-                    # database_utils.execute_write("databases/users.db", q)
-                    # logged_user = get_user_profile_from_database_by_id(profile.id)
+                # database_utils.execute_write("databases/users.db", q)
+                # logged_user = get_user_profile_from_database_by_id(profile.id)
 
             vid = get_video_by_id(video_id)
             if request.method == 'GET':
                 return render_template("edit.html", video=vid)
             else:
-
                 return render_template("edit.html", video=vid, status="saved")
         else:
             return access_denied(403)

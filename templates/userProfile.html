@@ -15,8 +15,6 @@
         function avatarUpload() {
             let name = document.getElementById("avatar-input").files[0].name;
             document.getElementById("avatar-input-label").innerText = name;
-            {#document.getElementById("avatar-form").submit();#}
-
             return false;
         }
     </script>
@@ -35,7 +33,6 @@
                        aria-selected="false">Videos</a>
                 </li>
             </ul>
-
 
             <div class="tab-content mt-3 col-10">
                 <div class="tab-pane active" id="settings" role="tabpanel" aria-labelledby="settings-tab">
@@ -56,11 +53,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-6 text-center">
-
+                                <div class="col text-center align-self-center">
                                     <form id="avatar-form" method="post"
                                           onsubmit="return true;" enctype="multipart/form-data">
-                                        <div class="input-group">
+
+                                        <div class="input-group" style="margin: 10px">
                                             <div class="custom-file">
                                                 <input type="file" class="custom-file-input" id="avatar-input" name="avatar"
                                                        aria-describedby="avatar-input" placeholder="Change Avatar"
@@ -69,9 +66,8 @@
                                                        for="avatar-input">Change Avatar</label>
                                             </div>
                                         </div>
-
-                                        {#                                        <label for="sub"> Submit</label>#}
                                         <input id="sub" type="submit">
+
                                     </form>
                                 </div>
                             </div>

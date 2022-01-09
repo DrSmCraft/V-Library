@@ -97,10 +97,13 @@ def set_attr_with_constraint(database, table, constraint_attr, modifier=Combinat
 
     query = "UPDATE " + table + " SET " + q + " WHERE " + c
     query = query.replace(",  WHERE", " WHERE").replace("  ", " ")
+    print(query)
     con = sqlite3.connect(database)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
-    cur.execute(query)
+    result = cur.execute(query)
+    con.commit()
     con.close()
+    print(result)
 
 
