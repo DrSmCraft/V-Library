@@ -3,7 +3,7 @@
 V-Library is a prototype video sharing platform made with Flask. 
 
 
-
+![Screenshot](https://raw.githubusercontent.com/DrSmCraft/V-Library/master/Screenshot.png)
 
 
 
